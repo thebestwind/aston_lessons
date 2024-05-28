@@ -13,11 +13,14 @@ public class Main {
 
     public static int factorial(int num) {
         int factorial = 1;
+        if (num < 0) {
+            throw new IllegalArgumentException("Введите неотрицательное число");
+        } else {
         for(int i = 1; i <= num; ++i) {
             factorial *= i;
         }
         return factorial;
     }
-}
+}}
 
 
