@@ -20,4 +20,9 @@ public class MainTest {
     public void testFactorial(int input, int expected) {
         Assert.assertEquals(Main.factorial(input), expected);
     }
+
+    @Test(expectedExceptions = IllegalArgumentException.class)
+    public void testFactorialNegativeNumber() {
+        Main.factorial(-1);
+    }
 }
