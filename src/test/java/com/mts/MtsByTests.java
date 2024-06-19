@@ -76,6 +76,40 @@ public class MtsByTests {
     }
 
     @Test
+    public void testPlaceholderTexts() {
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+
+        // Проверка для "Услуги связи"
+        WebElement servicesDropdown = wait.until(ExpectedConditions.elementToBeClickable(By.id("serviceType")));
+        servicesDropdown.click();
+        WebElement serviceOption = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//option[@value='УСЛУГИ СВЯЗИ']")));
+        serviceOption.click();
+        WebElement phoneNumberInput = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("phoneNumber")));
+        Assert.assertEquals(phoneNumberInput.getAttribute("placeholder"), "Введите номер телефона", "Placeholder text for phone number is incorrect");
+
+        // Проверка для "Домашний интернет"
+        servicesDropdown.click();
+        serviceOption = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//option[@value='ДОМАШНИЙ ИНТЕРНЕТ']")));
+        serviceOption.click();
+        WebElement internetAccountInput = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("internetAccount")));
+        Assert.assertEquals(internetAccountInput.getAttribute("placeholder"), "Введите номер договора", "Placeholder text for internet account is incorrect");
+
+        // Проверка для "Рассрочка"
+        servicesDropdown.click();
+        serviceOption = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//option[@value='РАССРОЧКА']")));
+        serviceOption.click();
+        WebElement installmentAccountInput = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("installmentAccount")));
+        Assert.assertEquals(installmentAccountInput.getAttribute("placeholder"), "Введите номер договора", "Placeholder text for installment account is incorrect");
+
+        // Проверка для "Задолженность"
+        servicesDropdown.click();
+        serviceOption = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//option[@value='ЗАДОЛЖЕННОСТЬ']")));
+        serviceOption.click();
+        WebElement debtAccountInput = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("debtAccount")));
+        Assert.assertEquals(debtAccountInput.getAttribute("placeholder"), "Введите номер договора", "Placeholder text for debt account is incorrect");
+    }
+
+    @Test
     public void testContinueButton() {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         WebElement servicesDropdown = wait.until(ExpectedConditions.elementToBeClickable(By.id("serviceType")));
@@ -86,8 +120,31 @@ public class MtsByTests {
         phoneNumberInput.sendKeys("297777777");
         WebElement continueButton = wait.until(ExpectedConditions.elementToBeClickable(By.id("continueButton")));
         continueButton.click();
-        WebElement confirmationMessage = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("confirmationMessage")));
-        Assert.assertTrue(confirmationMessage.isDisplayed(), "The continue button does not work correctly");
+
+        // Проверка корректности отображения суммы, номера телефона, надписей в незаполненных полях и иконок платёжных систем
+        WebElement amount = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("amount")));
+        Assert.assertTrue(amount.isDisplayed(), "Amount is not displayed");
+        Assert.assertEquals(amount.getText(), "Expected amount text", "Amount text is incorrect");
+
+        WebElement displayedPhoneNumber = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("displayedPhoneNumber")));
+        Assert.assertTrue(displayedPhoneNumber.isDisplayed(), "Phone number is not displayed");
+        Assert.assertEquals(displayedPhoneNumber.getText(), "297777777", "Phone number text is incorrect");
+
+        WebElement cardNumberInput = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("cardNumber")));
+        Assert.assertEquals(cardNumberInput.getAttribute("placeholder"), "Введите номер карты", "Placeholder text for card number is incorrect");
+
+        WebElement expirationDateInput = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("expirationDate")));
+        Assert.assertEquals(expirationDateInput.getAttribute("placeholder"), "MM/YY", "Placeholder text for expiration date is incorrect");
+
+        WebElement cvvInput = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("cvv")));
+        Assert.assertEquals(cvvInput.getAttribute("placeholder"), "CVV", "Placeholder text for CVV is incorrect");
+
+        List<WebElement> paymentSystemIcons = wait.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(By.xpath("//div[@class='payment-systems']//img")));
+        Assert.assertFalse(paymentSystemIcons.isEmpty(), "Payment system icons are not displayed");
+
+        for (WebElement icon : paymentSystemIcons) {
+            Assert.assertTrue(icon.isDisplayed(), "A payment system icon is not displayed");
+        }
     }
 
     @AfterClass
